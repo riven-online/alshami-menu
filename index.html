@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منيو الشامي السوري</title>
+    <style>
+        /* تنسيقات التصميم */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f4f4; color: #333; padding-bottom: 80px; }
+        header { background-color: #c0392b; color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        header h1 { font-size: 22px; }
+        header p { font-size: 14px; margin-top: 5px; opacity: 0.9; }
+        
+        /* الأقسام */
+        .categories { display: flex; overflow-x: auto; background: white; padding: 10px; border-bottom: 1px solid #ddd; position: sticky; top: 75px; z-index: 99; }
+        .category-btn { white-space: nowrap; padding: 8px 15px; margin: 0 5px; border: 1px solid #c0392b; border-radius: 20px; background: white; color: #c0392b; cursor: pointer; font-weight: bold; }
+        .category-btn.active { background: #c0392b; color: white; }
+
+        /* كروت الأصناف */
+        .menu-container { padding: 15px; display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .item-card { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 10px; }
+        .item-header { display: flex; justify-content: space-between; align-items: center; }
+        .item-title { font-size: 18px; font-weight: bold; }
+        .item-price { color: #c0392b; font-weight: bold; font-size: 16px; }
+        
+        /* اختيار الحجم */
+        .options-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .option-btn { border: 1px solid #ccc; background: #f9f9f9; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .option-btn.selected { background: #c0392b; color: white; border-color: #c0392b; }
+        
+        .add-btn { background: #27ae60; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: auto; }
+        .add-btn:active { background: #219150; }
+
+        /* سلة الطلبات العائمة */
+        .cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.2); }
+        .cart-info { font-size: 16px; }
+        .checkout-btn { background: #e67e22; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        /* نافذة السلة */
+        .cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
+        .cart-content { background: white; width: 90%; max-width: 400px; border-radius: 10px; padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .cart-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 10px 0; }
+        .close-btn { background: #c0392b; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- رأس الصفحة -->
+    <header>
+        <h1>مطعم الشامي السوري</h1>
+        <p>أهل العاشر - 10 رمضان</p>
+        <p>📞 01285666692</p>
+    </header>
+
+    <!-- أزرار الأقسام -->
+    <div class="categories" id="categories">
+        <!-- سيتم توليدها بواسطة الجافاسكريبت -->
+    </div>
+
+    <!-- قائمة الأصناف -->
+    <div class="menu-container" id="menu">
+        <!-- سيتم توليدها بواسطة الجافاسكريبت -->
+    </div>
+
+    <!-- شريط السلة السفلي -->
+    <div class="cart-bar" id="cartBar" style="display: none;">
+        <div class="cart-info">الإجمالي: <span id="totalPrice">0</span> ج.م</div>
+        <button class="checkout-btn" onclick="showCart()">عرض السلة</button>
+    </div>
+
+    <!-- نافذة السلة -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <h3>طلبك</h3>
+            <div id="cartItemsList"></div>
+            <div style="margin-top: 15px; font-weight: bold;">الإجمالي: <span id="modalTotalPrice">0</span> ج.م</div>
+            <button class="checkout-btn" style="width: 100%; margin-top: 15px;" onclick="sendToWhatsApp()">إتمام الطلب على واتساب</button>
+            <button class="close-btn" style="width: 100%; margin-top: 10px;" onclick="closeCart()">إغلاق</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. هنا بتحط بيانات المطعم والأصناف
+        // تقدر تعدل في الأصناف والأسعار زي ما تحب
+        const menuData = [
+            {
+                category: "المنيوهات",
+                items: [
+                    { name: "وجبة كفتة عجل", options: [{label: "1/8", price: 80}, {label: "1/4", price: 130}, {label: "1/2", price: 245}, {label: "كيلو", price: 475}] },
+                    { name: "وجبة كفتة فراخ", options: [{label: "1/8", price: 90}, {label: "1/4", price: 170}, {label: "1/2", price: 300}] },
+                    { name: "وجبة كباب عجل", options: [{label: "1/8", price: 190}, {label: "1/4", price: 380}, {label: "1/2", price: 675}] }
+                ]
+            },
+            {
+                category: "الفراخ السادة",
+                items: [
+                    { name: "فرخة شوایة", options: [{label: "شوایة", price: 400}, {label: "فحم", price: 385}] },
+                    { name: "نصف فرخة", options: [{label: "شوایة", price: 200}, {label: "فحم", price: 190}] },
+                    { name: "ربع فرخة", options: [{label: "شوایة", price: 105}, {label: "فحم", price: 100}] }
+                ]
+            },
+            {
+                category: "تشاورما الفراخ",
+                items: [
+                    { name: "سندوتش شاورما فراخ", options: [{label: "صغير", price: 65}, {label: "كبير", price: 80}, {label: "صاج", price: 90}, {label: "فرنساوي", price: 90}] },
+                    { name: "وجبة شاورما عربي مقطع", options: [{label: "عادي", price: 120}] },
+                    { name: "فطيرة شاورما بوراك", options: [{label: "عادي", price: 170}] }
+                ]
+            },
+            {
+                category: "السندوتشات",
+                items: [
+                    { name: "سندوتش شاورما لحم", options: [{label: "صغير", price: 85}, {label: "كبير", price: 100}] },
+                    { name: "سندوتش برجر لحم", options: [{label: "عادي", price: 60}] },
+                    { name: "سندوتش برجر فراخ", options: [{label: "عادي", price: 70}] }
+                ]
+            }
+        ];
+
+        // 2. الكود البرمجي (مش محتاج تعدل فيه)
+        let cart = [];
+        let currentCategory = menuData[0].category;
+
+        // توليد الأقسام
+        const categoriesContainer = document.getElementById('categories');
+        menuData.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = `category-btn ${cat.category === currentCategory ? 'active' : ''}`;
+            btn.innerText = cat.category;
+            btn.onclick = () => {
+                currentCategory = cat.category;
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderMenu();
+            };
+            categoriesContainer.appendChild(btn);
+        });
+
+        // دالة لعرض الأصناف
+        function renderMenu() {
+            const menuContainer = document.getElementById('menu');
+            menuContainer.innerHTML = '';
+            
+            const categoryData = menuData.find(c => c.category === currentCategory);
+            
+            categoryData.items.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                
+                let optionsHTML = '';
+                item.options.forEach((opt, optIndex) => {
+                    optionsHTML += `<button class="option-btn" onclick="selectOption(this, ${index}, ${optIndex})">${opt.label} - ${opt.price} ج.م</button>`;
+                });
+
+                card.innerHTML = `
+                    <div class="item-header">
+                        <div class="item-title">${item.name}</div>
+                    </div>
+                    <div class="options-container">${optionsHTML}</div>
+                    <button class="add-btn" onclick="addToCart(${index})">أضف للسلة</button>
+                `;
+                menuContainer.appendChild(card);
+            });
+        }
+
+        // اختيار الحجم
+        let selectedOptions = {};
+        function selectOption(btn, itemIndex, optIndex) {
+            // إزالة التحديد من باقي الأزرار في نفس الكارت
+            const parent = btn.parentElement;
+            parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            // حفظ الاختيار
+            selectedOptions[itemIndex] = optIndex;
+        }
+
+        // إضافة للسلة
+        function addToCart(itemIndex) {
+            const categoryData = menuData.find(c => c.category === currentCategory);
+            const item = categoryData.items[itemIndex];
+            
+            const optIndex = selectedOptions[itemIndex] !== undefined ? selectedOptions[itemIndex] : 0;
+            const selectedOpt = item.options[optIndex];
+            
+            // التحقق إذا كان الصنف موجود بالفعل بنفس الحجم
+            const existingItem = cart.find(i => i.name === item.name && i.size === selectedOpt.label);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    name: item.name,
+                    size: selectedOpt.label,
+                    price: selectedOpt.price,
+                    quantity: 1
+                });
+            }
+            
+            updateCartUI();
+            // إعادة تعيين الاختيار
+            delete selectedOptions[itemIndex];
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        }
+
+        // تحديث واجهة السلة
+        function updateCartUI() {
+            const cartBar = document.getElementById('cartBar');
+            const totalPriceEl = document.getElementById('totalPrice');
+            
+            if (cart.length === 0) {
+                cartBar.style.display = 'none';
+                return;
+            }
+            
+            cartBar.style.display = 'flex';
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            totalPriceEl.innerText = total;
+        }
+
+        // عرض السلة
+        function showCart() {
+            const modal = document.getElementById('cartModal');
+            const list = document.getElementById('cartItemsList');
+            const totalEl = document.getElementById('modalTotalPrice');
+            
+            list.innerHTML = '';
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                total += item.price * item.quantity;
+                list.innerHTML += `
+                    <div class="cart-item">
+                        <div>${item.name} (${item.size}) × ${item.quantity}</div>
+                        <div>${item.price * item.quantity} ج.م</div>
+                    </div>
+                `;
+            });
+            
+            totalEl.innerText = total;
+            modal.style.display = 'flex';
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        // إرسال الطلب على واتساب
+        function sendToWhatsApp() {
+            const phone = "201285666692"; // غير الرقم ده لرقم المطعم
+            let message = "مرحباً، عايز أطلب الأصناف دي:%0A";
+            let total = 0;
+            
+            cart.forEach(item => {
+                message += `- ${item.name} (${item.size}) × ${item.quantity} = ${item.price * item.quantity} ج.م%0A`;
+                total += item.price * item.quantity;
+            });
+            
+            message += `%0Aالإجمالي: ${total} ج.م`;
+            
+            const whatsappUrl = `https://wa.me/${phone}?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // بدء العرض
+        renderMenu();
+    </script>
+</body>
+</html>
