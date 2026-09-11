@@ -5,39 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منيو الشامي السوري</title>
     <style>
-        /* تنسيقات التصميم */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f4f4f4; color: #333; padding-bottom: 80px; }
         header { background-color: #c0392b; color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         header h1 { font-size: 22px; }
         header p { font-size: 14px; margin-top: 5px; opacity: 0.9; }
-        
-        /* الأقسام */
         .categories { display: flex; overflow-x: auto; background: white; padding: 10px; border-bottom: 1px solid #ddd; position: sticky; top: 75px; z-index: 99; }
         .category-btn { white-space: nowrap; padding: 8px 15px; margin: 0 5px; border: 1px solid #c0392b; border-radius: 20px; background: white; color: #c0392b; cursor: pointer; font-weight: bold; }
         .category-btn.active { background: #c0392b; color: white; }
-
-        /* كروت الأصناف */
         .menu-container { padding: 15px; display: grid; grid-template-columns: 1fr; gap: 15px; }
         .item-card { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 10px; }
         .item-header { display: flex; justify-content: space-between; align-items: center; }
         .item-title { font-size: 18px; font-weight: bold; }
-        .item-price { color: #c0392b; font-weight: bold; font-size: 16px; }
-        
-        /* اختيار الحجم */
         .options-container { display: flex; flex-wrap: wrap; gap: 8px; }
         .option-btn { border: 1px solid #ccc; background: #f9f9f9; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 14px; }
         .option-btn.selected { background: #c0392b; color: white; border-color: #c0392b; }
-        
         .add-btn { background: #27ae60; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: auto; }
         .add-btn:active { background: #219150; }
-
-        /* سلة الطلبات العائمة */
         .cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.2); }
         .cart-info { font-size: 16px; }
         .checkout-btn { background: #e67e22; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        
-        /* نافذة السلة */
         .cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
         .cart-content { background: white; width: 90%; max-width: 400px; border-radius: 10px; padding: 20px; max-height: 80vh; overflow-y: auto; }
         .cart-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 10px 0; }
@@ -46,30 +33,20 @@
 </head>
 <body>
 
-    <!-- رأس الصفحة -->
     <header>
         <h1>مطعم الشامي السوري</h1>
         <p>أهل العاشر - 10 رمضان</p>
         <p>📞 01285666692</p>
     </header>
 
-    <!-- أزرار الأقسام -->
-    <div class="categories" id="categories">
-        <!-- سيتم توليدها بواسطة الجافاسكريبت -->
-    </div>
+    <div class="categories" id="categories"></div>
+    <div class="menu-container" id="menu"></div>
 
-    <!-- قائمة الأصناف -->
-    <div class="menu-container" id="menu">
-        <!-- سيتم توليدها بواسطة الجافاسكريبت -->
-    </div>
-
-    <!-- شريط السلة السفلي -->
     <div class="cart-bar" id="cartBar" style="display: none;">
         <div class="cart-info">الإجمالي: <span id="totalPrice">0</span> ج.م</div>
         <button class="checkout-btn" onclick="showCart()">عرض السلة</button>
     </div>
 
-    <!-- نافذة السلة -->
     <div class="cart-modal" id="cartModal">
         <div class="cart-content">
             <h3>طلبك</h3>
@@ -81,15 +58,14 @@
     </div>
 
     <script>
-        // 1. هنا بتحط بيانات المطعم والأصناف
-        // تقدر تعدل في الأصناف والأسعار زي ما تحب
         const menuData = [
             {
                 category: "المنيوهات",
                 items: [
                     { name: "وجبة كفتة عجل", options: [{label: "1/8", price: 80}, {label: "1/4", price: 130}, {label: "1/2", price: 245}, {label: "كيلو", price: 475}] },
                     { name: "وجبة كفتة فراخ", options: [{label: "1/8", price: 90}, {label: "1/4", price: 170}, {label: "1/2", price: 300}] },
-                    { name: "وجبة كباب عجل", options: [{label: "1/8", price: 190}, {label: "1/4", price: 380}, {label: "1/2", price: 675}] }
+                    { name: "وجبة كباب عجل", options: [{label: "1/8", price: 190}, {label: "1/4", price: 380}, {label: "1/2", price: 675}] },
+                    { name: "وجبة مشكل (كباب + كفتة)", options: [{label: "1/4", price: 335}, {label: "1/2", price: 620}] }
                 ]
             },
             {
@@ -97,7 +73,24 @@
                 items: [
                     { name: "فرخة شوایة", options: [{label: "شوایة", price: 400}, {label: "فحم", price: 385}] },
                     { name: "نصف فرخة", options: [{label: "شوایة", price: 200}, {label: "فحم", price: 190}] },
-                    { name: "ربع فرخة", options: [{label: "شوایة", price: 105}, {label: "فحم", price: 100}] }
+                    { name: "ربع فرخة", options: [{label: "شوایة", price: 105}, {label: "فحم", price: 100}] },
+                    { name: "ربع صدر فرخة", options: [{label: "شوایة", price: 115}, {label: "فحم", price: 110}] }
+                ]
+            },
+            {
+                category: "المقبلات",
+                items: [
+                    { name: "عليبة طحينة", options: [{label: "صغير", price: 7}, {label: "وسط", price: 20}] },
+                    { name: "عليبة سلطة", options: [{label: "صغير", price: 2}, {label: "وسط", price: 25}] },
+                    { name: "عليبة بابا غنوج", options: [{label: "صغير", price: 2}, {label: "وسط", price: 20}] },
+                    { name: "عليبة ثومية", options: [{label: "صغير", price: 2}, {label: "وسط", price: 20}] }
+                ]
+            },
+            {
+                category: "الإضافات",
+                items: [
+                    { name: "عيش سوري", options: [{label: "عادي", price: 1}, {label: "كبير", price: 2}] },
+                    { name: "أرز بسمتي", options: [{label: "عادي", price: 30}, {label: "كبير", price: 40}] }
                 ]
             },
             {
@@ -105,24 +98,71 @@
                 items: [
                     { name: "سندوتش شاورما فراخ", options: [{label: "صغير", price: 65}, {label: "كبير", price: 80}, {label: "صاج", price: 90}, {label: "فرنساوي", price: 90}] },
                     { name: "وجبة شاورما عربي مقطع", options: [{label: "عادي", price: 120}] },
-                    { name: "فطيرة شاورما بوراك", options: [{label: "عادي", price: 170}] }
+                    { name: "فطيرة شاورما بوراك", options: [{label: "عادي", price: 170}] },
+                    { name: "وجبة شاورما عربي دبل", options: [{label: "عادي", price: 150}] },
+                    { name: "فطيرة شاورما موتزاريلا", options: [{label: "عادي", price: 170}] }
+                ]
+            },
+            {
+                category: "تشاورما اللحم",
+                items: [
+                    { name: "سندوتش شاورما لحم", options: [{label: "صغير", price: 85}, {label: "كبير", price: 100}] },
+                    { name: "وجبة شاورما لحم عربي مقطع", options: [{label: "عادي", price: 145}] },
+                    { name: "وجبة شاورما لحم عربي دبل", options: [{label: "عادي", price: 195}] },
+                    { name: "فطيرة شاورما لحم موتزاريلا", options: [{label: "عادي", price: 160}] }
                 ]
             },
             {
                 category: "السندوتشات",
                 items: [
-                    { name: "سندوتش شاورما لحم", options: [{label: "صغير", price: 85}, {label: "كبير", price: 100}] },
-                    { name: "سندوتش برجر لحم", options: [{label: "عادي", price: 60}] },
-                    { name: "سندوتش برجر فراخ", options: [{label: "عادي", price: 70}] }
+                    { name: "سندوتش برجر لحم", options: [{label: "سوري", price: 60}, {label: "فرنساوي", price: 70}] },
+                    { name: "سندوتش برجر فراخ", options: [{label: "سوري", price: 70}, {label: "فرنساوي", price: 80}] },
+                    { name: "سندوتش شيش طاووق", options: [{label: "عادي", price: 75}] },
+                    { name: "سندوتش كفتة فراخ", options: [{label: "عادي", price: 45}] },
+                    { name: "سندوتش كباب عجل", options: [{label: "عادي", price: 80}] }
+                ]
+            },
+            {
+                category: "البروستد",
+                items: [
+                    { name: "وجبة فرخة كاملة بروستد", options: [{label: "عادي", price: 435}] },
+                    { name: "نصف فرخة بروستد", options: [{label: "عادي", price: 225}] },
+                    { name: "ربع فرخة بروستد", options: [{label: "عادي", price: 125}] }
+                ]
+            },
+            {
+                category: "وجبات الفراخ الغربي",
+                items: [
+                    { name: "وجبة فراخ كرسبي", options: [{label: "عادي", price: 145}] },
+                    { name: "وجبة زنجر فراخ", options: [{label: "عادي", price: 160}] },
+                    { name: "وجبة شيش طاووق", options: [{label: "عادي", price: 140}] },
+                    { name: "وجبة فاهيتا فراخ", options: [{label: "عادي", price: 125}] }
+                ]
+            },
+            {
+                category: "وجبات الفراخ",
+                items: [
+                    { name: "وجبة فرخة كاملة", options: [{label: "شوایة", price: 420}, {label: "فحم", price: 400}] },
+                    { name: "وجبة نصف فرخة", options: [{label: "شوایة", price: 220}, {label: "فحم", price: 210}] },
+                    { name: "وجبة ربع فرخة", options: [{label: "شوایة", price: 110}, {label: "فحم", price: 105}] },
+                    { name: "وجبة أجنحة فراخ", options: [{label: "عادي", price: 95}] }
+                ]
+            },
+            {
+                category: "سندوتشات البرجر",
+                items: [
+                    { name: "سندوتش برجر سادة", options: [{label: "لحم", price: 60}, {label: "فراخ", price: 70}] },
+                    { name: "سندوتش برجر موتزاريلا", options: [{label: "لحم", price: 70}, {label: "فراخ", price: 80}] },
+                    { name: "سندوتش برجر بالبيض", options: [{label: "لحم", price: 80}, {label: "فراخ", price: 90}] },
+                    { name: "سندوتش برجر دوبل", options: [{label: "لحم", price: 90}, {label: "فراخ", price: 100}] }
                 ]
             }
         ];
 
-        // 2. الكود البرمجي (مش محتاج تعدل فيه)
         let cart = [];
         let currentCategory = menuData[0].category;
+        let selectedOptions = {};
 
-        // توليد الأقسام
         const categoriesContainer = document.getElementById('categories');
         menuData.forEach(cat => {
             const btn = document.createElement('button');
@@ -137,22 +177,17 @@
             categoriesContainer.appendChild(btn);
         });
 
-        // دالة لعرض الأصناف
         function renderMenu() {
             const menuContainer = document.getElementById('menu');
             menuContainer.innerHTML = '';
-            
             const categoryData = menuData.find(c => c.category === currentCategory);
-            
             categoryData.items.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = 'item-card';
-                
                 let optionsHTML = '';
                 item.options.forEach((opt, optIndex) => {
                     optionsHTML += `<button class="option-btn" onclick="selectOption(this, ${index}, ${optIndex})">${opt.label} - ${opt.price} ج.م</button>`;
                 });
-
                 card.innerHTML = `
                     <div class="item-header">
                         <div class="item-title">${item.name}</div>
@@ -164,29 +199,19 @@
             });
         }
 
-        // اختيار الحجم
-        let selectedOptions = {};
         function selectOption(btn, itemIndex, optIndex) {
-            // إزالة التحديد من باقي الأزرار في نفس الكارت
             const parent = btn.parentElement;
             parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
-            
-            // حفظ الاختيار
             selectedOptions[itemIndex] = optIndex;
         }
 
-        // إضافة للسلة
         function addToCart(itemIndex) {
             const categoryData = menuData.find(c => c.category === currentCategory);
             const item = categoryData.items[itemIndex];
-            
             const optIndex = selectedOptions[itemIndex] !== undefined ? selectedOptions[itemIndex] : 0;
             const selectedOpt = item.options[optIndex];
-            
-            // التحقق إذا كان الصنف موجود بالفعل بنفس الحجم
             const existingItem = cart.find(i => i.name === item.name && i.size === selectedOpt.label);
-            
             if (existingItem) {
                 existingItem.quantity += 1;
             } else {
@@ -197,38 +222,30 @@
                     quantity: 1
                 });
             }
-            
             updateCartUI();
-            // إعادة تعيين الاختيار
             delete selectedOptions[itemIndex];
             document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
         }
 
-        // تحديث واجهة السلة
         function updateCartUI() {
             const cartBar = document.getElementById('cartBar');
             const totalPriceEl = document.getElementById('totalPrice');
-            
             if (cart.length === 0) {
                 cartBar.style.display = 'none';
                 return;
             }
-            
             cartBar.style.display = 'flex';
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             totalPriceEl.innerText = total;
         }
 
-        // عرض السلة
         function showCart() {
             const modal = document.getElementById('cartModal');
             const list = document.getElementById('cartItemsList');
             const totalEl = document.getElementById('modalTotalPrice');
-            
             list.innerHTML = '';
             let total = 0;
-            
-            cart.forEach((item, index) => {
+            cart.forEach((item) => {
                 total += item.price * item.quantity;
                 list.innerHTML += `
                     <div class="cart-item">
@@ -237,7 +254,6 @@
                     </div>
                 `;
             });
-            
             totalEl.innerText = total;
             modal.style.display = 'flex';
         }
@@ -246,24 +262,19 @@
             document.getElementById('cartModal').style.display = 'none';
         }
 
-        // إرسال الطلب على واتساب
         function sendToWhatsApp() {
-            const phone = "201285666692"; // غير الرقم ده لرقم المطعم
+            const phone = "201285666692";
             let message = "مرحباً، عايز أطلب الأصناف دي:%0A";
             let total = 0;
-            
             cart.forEach(item => {
                 message += `- ${item.name} (${item.size}) × ${item.quantity} = ${item.price * item.quantity} ج.م%0A`;
                 total += item.price * item.quantity;
             });
-            
             message += `%0Aالإجمالي: ${total} ج.م`;
-            
             const whatsappUrl = `https://wa.me/${phone}?text=${message}`;
             window.open(whatsappUrl, '_blank');
         }
 
-        // بدء العرض
         renderMenu();
     </script>
 </body>
